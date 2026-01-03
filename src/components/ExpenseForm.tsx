@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Participant } from '../App';
-import { PlusCircle, DollarSign, Calendar } from 'lucide-react';
+import { PlusCircle, DollarSign } from 'lucide-react';
 
 interface ExpenseFormProps {
   participants: Participant[];
@@ -11,8 +11,6 @@ interface ExpenseFormProps {
 export function ExpenseForm({ participants, onExpenseAdded }: ExpenseFormProps) {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [paidBy, setPaidBy] = useState('');
   const [selectedParticipants, setSelectedParticipants] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +27,7 @@ export function ExpenseForm({ participants, onExpenseAdded }: ExpenseFormProps) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!description.trim() || !amount || !date || !paidBy || selectedParticipants.size === 0) {
+    if (!description.trim() || !amount || selectedParticipants.size === 0) {
       alert('Please fill in all fields and select at least one participant');
       return;
     }
@@ -48,8 +46,6 @@ export function ExpenseForm({ participants, onExpenseAdded }: ExpenseFormProps) 
         .insert({
           description: description.trim(),
           total_amount: totalAmount,
-          expense_date: date,
-          paid_by: paidBy,
         })
         .select()
         .single();
@@ -74,8 +70,6 @@ export function ExpenseForm({ participants, onExpenseAdded }: ExpenseFormProps) 
 
       setDescription('');
       setAmount('');
-      setDate(new Date().toISOString().split('T')[0]);
-      setPaidBy('');
       setSelectedParticipants(new Set());
       onExpenseAdded();
     } catch (error) {
@@ -108,66 +102,23 @@ export function ExpenseForm({ participants, onExpenseAdded }: ExpenseFormProps) 
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
-              Total Amount
-            </label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="number"
-                id="amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
-                step="0.01"
-                min="0"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
-              Date
-            </label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="date"
-                id="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
-            </div>
-          </div>
-        </div>
-
         <div>
-          <label htmlFor="paidBy" className="block text-sm font-medium text-gray-700 mb-2">
-            Who paid?
+          <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+            Total Amount
           </label>
-          {participants.length === 0 ? (
-            <p className="text-gray-500 text-sm bg-gray-50 p-4 rounded-lg">
-              No participants yet. Add participants in the right panel to get started.
-            </p>
-          ) : (
-            <select
-              id="paidBy"
-              value={paidBy}
-              onChange={(e) => setPaidBy(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            >
-              <option value="">Select who paid...</option>
-              {participants.map((participant) => (
-                <option key={participant.id} value={participant.id}>
-                  {participant.name}
-                </option>
-              ))}
-            </select>
-          )}
+          <div className="relative">
+            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="number"
+              id="amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
         </div>
 
         <div>

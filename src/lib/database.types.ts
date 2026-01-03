@@ -23,24 +23,18 @@ export interface Database {
           id: string;
           description: string;
           total_amount: number;
-          expense_date: string;
-          paid_by: string;
           created_at: string;
         };
         Insert: {
           id?: string;
           description: string;
           total_amount: number;
-          expense_date: string;
-          paid_by: string;
           created_at?: string;
         };
         Update: {
           id?: string;
           description?: string;
           total_amount?: number;
-          expense_date?: string;
-          paid_by?: string;
           created_at?: string;
         };
       };
